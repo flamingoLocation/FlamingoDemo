@@ -1,0 +1,118 @@
+The repository provides simple example of the implementation of flamingomobile library.
+
+**FLAMINGO** is a new API library for Android and IoT developers. The API is designed for the conventional developer and leaves the accurate location servicing to the positioning experts.
+FLAMINGO will use specially supporting server and deployed infrastructure in smart cities to enable better location precision and accuracy than the existing Android location service.
+find more on: [http://flamingosdk.com/](http://flamingosdk.com/).
+
+Mock-up **.aar** library can be implemented in two ways depending on data the user wishes to receive from the callback.  
+*! Remember that Flamingo is a location service based on server connection,   
+hence requires the Manifest.permission.INTERNET and Manifest.permission.ACCESS_FINE_LOCATION permissions.*
+
+a)	Receive **just** Flamingo solution (OFFICIAL Flamingo implementation)
+Implementation :
+Step 1. Create ```FlamingoManager``` object providing the ```Context```.  
+Step 2. Implement ```FlamingoLocationCallback``` which will listen to ```FlamingoLocation``` updates.  
+Step 3. Register to Flamingo service providing credential details, e.g.   
+```mFlamingoManager.registerFlamingoService("flamingo_application", "flamingo_password", "flamingo_companyId", new FlamingoCallbackExample());```  
+    
+Mock-up version gives you full access with any given String values.  
+
+```
+Main Activity.java
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
+
+    FlamingoManager mFlamingoManager = new FlamingoManager(this);
+    mFlamingoManager.registerFlamingoService("flamingo_application", "flamingo_password", "flamingo_companyId", new FlamingoCallbackExample());
+
+```
+callback implementation example:  
+```
+public class FlamingoCallbackExample implements FlamingoLocationCallback {
+
+    @Override
+    public void registerFlamingoLocationCallback() {
+
+    }
+
+    @Override
+    public void unregisterFlamingoLocationCallback() {
+
+    }
+
+    @Override
+    public void onFlamingoLocationReceived(FlamingoLocation flamingoLocation) {
+       double latitude =  flamingoLocation.getLatitude();
+       double longitude =  flamingoLocation.getLongitude();
+    }
+}
+
+```
+
+b)	Receive **Flamingo solution (PPP or RTK)** and **SPP solution** (which is being used by default smartphone location).
+
+Implementation :
+Step 1. Create ```FlamingoManager``` object providing the ```Context```.  
+Step 2. Implement ```FlamingoLocationCallback``` and ```SppLocationCallback``` which will listen to ```FlamingoLocation``` and ```SppLocation``` updates accordingly.  
+Step 3. Register to Flamingo service providing credential details, e.g.  
+```mFlamingoManager.registerFlamingoService("flamingo_application", "flamingo_password", "flamingo_companyId", new FlamingoCallbackExample(),new SppCallbackExample());```  
+  
+Mock-up version gives you full access with any given String values.
+
+```
+MainActivity.java
+Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
+
+
+    FlamingoManagerPlus mFlamingoManager = new FlamingoManagerPlus(this);
+    mFlamingoManager.registerFlamingoService("flamingo_application", "flamingo_password", "flamingo_companyId", new FlamingoCallbackExample(), new SppCallbackExample());
+```
+
+
+```
+public class FlamingoCallbackExample implements FlamingoLocationCallback {
+
+    @Override
+    public void registerFlamingoLocationCallback() {
+
+    }
+
+    @Override
+    public void unregisterFlamingoLocationCallback() {
+
+    }
+
+    @Override
+    public void onFlamingoLocationReceived(FlamingoLocation flamingoLocation) {
+       double latitude =  flamingoLocation.getLatitude();
+       double longitude =  flamingoLocation.getLongitude();
+    }
+
+
+```
+callback implementation example:  
+```
+public class SppCallbackExample implements SppLocationCallback {
+    @Override
+    public void registerSppLocationCallback() {
+
+    }
+
+    @Override
+    public void unregisterSppLocationCallback() {
+
+    }
+
+    @Override
+    public void onSppLocationReceived(SppLocation sppLocation) {
+        double latitude =  sppLocation.getLatitude();
+        double longitude =  sppLocation.getLongitude();
+    }
+}
+
+```
