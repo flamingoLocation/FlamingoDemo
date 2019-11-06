@@ -51,10 +51,23 @@ import flamingo.flamingoapi.enums.ApplicationType;
 import flamingo.flamingoapi.spp_location.SppLocation;
 import flamingo.flamingoapi.spp_location.SppLocationCallback;
 
+/**
+ * <h1>FlamingoDemo</h1>
+ * <p> FlamingoDemo represents an example implementation of Flamingo Location implementation.<br>
+ * The project uses mock-up version of flamingoapi library and returns pre-prepared set of data.<br>
+ * Designed to enable user access to the .aar library, which can be copied and used in local projects.
+ * </p>
+ *
+ * @author NSL, Nottingham
+ * @version 1.0
+ * @since  06/11/2019
+ */
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, FlamingoLocationCallback, SppLocationCallback {
     private String TAG = "MainActivity";
+
     /**
-     * Permissions that need to be explicitly requested from end user.
+     * Flamingo requires access to the INTERNET and FINE LOCATION.
+     * Permissions need to be explicitly requested from end user.
      */
     private final static int REQUEST_CODE_ASK_PERMISSIONS = 1;
     private static final String[] REQUIRED_SDK_PERMISSIONS = new String[]{
@@ -63,7 +76,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     /**
      * GoogleMap, GoogleLocation
      */
-    private LocationManager mLocationManager;
     private GoogleMap mMap;
     private Marker flamingoMarker, sppMarker;
     private MarkerOptions flamingoMarkerOption, sppMarkerOption;
@@ -82,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_main);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        getSupportActionBar().hide();
+        if (getSupportActionBar()!= null) getSupportActionBar().hide();
         checkPermissions();
 
         createWidgets();
@@ -97,23 +109,25 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void createWidgets() {
         iZoomFlamingo = findViewById(R.id.iZoomFlamingoLocationId);
-        iZoomFlamingo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mMap != null && flamingoPosition != null) {
-                    mMap.setMyLocationEnabled(true);
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(flamingoPosition, 18));
-                }
+
+        iZoomFlamingo.setOnClickListener((View v) ->{
+            if (mMap != null && flamingoPosition != null) {
+                mMap.setMyLocationEnabled(true);
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(flamingoPosition, 18));
             }
         });
+
         iZoomFlamingo.setAlpha(.2f);
     }
 
     /**
-     * Initialize google location callback and google NMEA callback
+     * Initialize google location callback and google NMEA callback.
+     *
+     * The project is created only for demonstration purposes and any details related to
+     * GoogleMap implementation cannot be used in other projects.
      */
     private void addGoogleMap() {
-        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+       LocationManager mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         // Check the latest version of Google Play Services is installed
         final int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
@@ -152,6 +166,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
+    /**
+     * create personalised marker
+     * @param context
+     * @param vectorResourceId
+     * @return
+     */
     private static BitmapDescriptor getBitmapFromVector(@NonNull Context context,
                                                         @DrawableRes int vectorResourceId) {
 
@@ -219,25 +239,26 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
+    /**
+     * Update Flamingo marker on the map when new location data be received
+     * @param flamingoLocation:: returns the flamingo positioning solution
+     */
     @Override
     public void onFlamingoLocationReceived(FlamingoLocation flamingoLocation) {
         flamingoPosition = new LatLng(flamingoLocation.getLatitude(), flamingoLocation.getLongitude());
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (mMap != null) {
-                    if (flamingoMarker != null) {
-                        flamingoMarker.remove();
-                    }
-
-                    flamingoMarker = mMap.addMarker(flamingoMarkerOption.position(flamingoPosition));
-                    if (!isZoomToLayer) {
-                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(flamingoPosition, 18));
-                        iZoomFlamingo.setAlpha(.8f);
-                        isZoomToLayer = true;
-                    }
-
+        runOnUiThread(() -> {
+            if (mMap != null) {
+                if (flamingoMarker != null) {
+                    flamingoMarker.remove();
                 }
+
+                flamingoMarker = mMap.addMarker(flamingoMarkerOption.position(flamingoPosition));
+                if (!isZoomToLayer) {
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(flamingoPosition, 18));
+                    iZoomFlamingo.setAlpha(.8f);
+                    isZoomToLayer = true;
+                }
+
             }
         });
     }
@@ -252,6 +273,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
+    /**
+     * Update Flamingo marker on the map when new location data be received
+     * @param sppLocation:: returns the single point position solution
+     */
     @Override
     public void onSppLocationReceived(SppLocation sppLocation) {
         LatLng sppPosition = new LatLng(sppLocation.getLatitude(), sppLocation.getLongitude());
@@ -268,6 +293,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
+    /**
+     * Ddd reference paths for Application Types: FITNESS, TRACKING, VEHICLE_NAVIGATION and PEDESTRIAN_NAVIGATION.
+     * SURVEYING and AUGMENTED_REALITY routes are not linear
+     */
     private void addKmlFiles() {
         new ReadKmlFile(R.raw.fitness_line).execute();
         new ReadKmlFile(R.raw.tracking_line).execute();
@@ -295,9 +324,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         protected Object doInBackground(Object[] objects) {
             try {
                 layer = new KmlLayer(mMap, mFile, getApplicationContext());
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (XmlPullParserException e) {
+            } catch (XmlPullParserException | IOException e) {
                 e.printStackTrace();
             }
             return layer;
@@ -310,9 +337,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 if (mMap != null) {
                     layer.addLayerToMap();
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (XmlPullParserException e) {
+            }catch (XmlPullParserException | IOException e) {
                 e.printStackTrace();
             }
         }

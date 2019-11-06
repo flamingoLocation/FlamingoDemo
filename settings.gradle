@@ -1,2 +1,2 @@
 include ':app'
-rootProject.name='FlamingoMockUON'
+rootProject.name='FlamingoDemo'
