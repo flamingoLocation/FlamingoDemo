@@ -1,25 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://earth.google.com/kml/2.2">
 <Document>
-<name>pedestrian_navigation_lines</name>
+<name>Paths_pn</name>
 <Style id="style1">
 	<LineStyle>
-		<color>ffaf8f3c</color>
+		<color>ff4d7025</color>
 		<width>5</width>
 	</LineStyle>
 </Style>
 <Placemark>
-<name>2</name>
-<description><![CDATA[<p>begin: 2
-<br/>end: 341</p>]]></description>
+<name>1</name>
+<description><![CDATA[<p>begin: 1
+<br/>end: 342</p>]]></description>
 <ExtendedData>
-	<Data name="begin"><displayName>begin</displayName><value><![CDATA[2]]></value></Data>
-	<Data name="end"><displayName>end</displayName><value><![CDATA[341]]></value></Data>
+	<Data name="begin"><displayName>begin</displayName><value><![CDATA[1]]></value></Data>
+	<Data name="end"><displayName>end</displayName><value><![CDATA[342]]></value></Data>
 </ExtendedData>
 <styleUrl>#style1</styleUrl>
 	<LineString>
 		<tessellate>1</tessellate>
 		<coordinates>
+			2.177014947,41.38292881,0.00000
 			2.177026253,41.38293812,0.00000
 			2.177037558,41.38294742,0.00000
 			2.177048864,41.38295673,0.00000
@@ -360,6 +361,7 @@
 			2.176972081,41.38289282,0.00000
 			2.176982761,41.38290253,0.00000
 			2.176993441,41.38291224,0.00000
+			2.177014947,41.38292881,0.00000
 		</coordinates>
 	</LineString>
 </Placemark>

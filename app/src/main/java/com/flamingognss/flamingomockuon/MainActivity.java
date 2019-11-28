@@ -33,6 +33,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.data.kml.KmlLayer;
@@ -60,7 +61,7 @@ import flamingo.flamingoapi.spp_location.SppLocationCallback;
  *
  * @author NSL, Nottingham
  * @version 1.0
- * @since  06/11/2019
+ * @since 06/11/2019
  */
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, FlamingoLocationCallback, SppLocationCallback {
     private String TAG = "MainActivity";
@@ -94,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_main);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        if (getSupportActionBar()!= null) getSupportActionBar().hide();
+        if (getSupportActionBar() != null) getSupportActionBar().hide();
         checkPermissions();
 
         createWidgets();
@@ -103,14 +104,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // implement Flamingo + SPP
         FlamingoManagerPlus mFlamingoManager = new FlamingoManagerPlus(this);
         mFlamingoManager.registerFlamingoService("flamingo_application", "flamingo_password", "flamingo_companyId", ApplicationType.VEHICLE_NAVIGATION, this, this);
-
-
     }
 
     private void createWidgets() {
         iZoomFlamingo = findViewById(R.id.iZoomFlamingoLocationId);
 
-        iZoomFlamingo.setOnClickListener((View v) ->{
+        iZoomFlamingo.setOnClickListener((View v) -> {
             if (mMap != null && flamingoPosition != null) {
                 mMap.setMyLocationEnabled(true);
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(flamingoPosition, 18));
@@ -122,12 +121,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     /**
      * Initialize google location callback and google NMEA callback.
-     *
+     * <p>
      * The project is created only for demonstration purposes and any details related to
      * GoogleMap implementation cannot be used in other projects.
      */
     private void addGoogleMap() {
-       LocationManager mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        LocationManager mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         // Check the latest version of Google Play Services is installed
         final int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
@@ -158,7 +157,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .title("flamingo")
                 .icon(getBitmapFromVector(this, R.drawable.circle_pink))
                 .anchor(0.5f, 0.5f);
-
         sppMarkerOption = new MarkerOptions()
                 .title("flamingo")
                 .icon(getBitmapFromVector(this, R.drawable.circle_green))
@@ -168,6 +166,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     /**
      * create personalised marker
+     *
      * @param context
      * @param vectorResourceId
      * @return
@@ -241,6 +240,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     /**
      * Update Flamingo marker on the map when new location data be received
+     *
      * @param flamingoLocation:: returns the flamingo positioning solution
      */
     @Override
@@ -254,11 +254,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                 flamingoMarker = mMap.addMarker(flamingoMarkerOption.position(flamingoPosition));
                 if (!isZoomToLayer) {
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(flamingoPosition, 18));
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(flamingoPosition, 20));
                     iZoomFlamingo.setAlpha(.8f);
                     isZoomToLayer = true;
                 }
-
             }
         });
     }
@@ -275,6 +274,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     /**
      * Update Flamingo marker on the map when new location data be received
+     *
      * @param sppLocation:: returns the single point position solution
      */
     @Override
@@ -298,10 +298,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
      * SURVEYING and AUGMENTED_REALITY routes are not linear
      */
     private void addKmlFiles() {
-        new ReadKmlFile(R.raw.fitness_line).execute();
+        new ReadKmlFile(R.raw.fitness_path).execute();
         new ReadKmlFile(R.raw.tracking_line).execute();
-        new ReadKmlFile(R.raw.vehicle_navigation_line).execute();
-        new ReadKmlFile(R.raw.pedestrian_navigation_line).execute();
+        new ReadKmlFile(R.raw.vehicle_navigation_path).execute();
+        new ReadKmlFile(R.raw.pedestrian_navigation_path).execute();
     }
 
     private class ReadKmlFile extends AsyncTask {
@@ -337,7 +337,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 if (mMap != null) {
                     layer.addLayerToMap();
                 }
-            }catch (XmlPullParserException | IOException e) {
+            } catch (XmlPullParserException | IOException e) {
                 e.printStackTrace();
             }
         }
